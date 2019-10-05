@@ -1,0 +1,35 @@
+[
+    {
+        "question": "What is the name of this most common cloud?",
+        "answers": ["Cirrus", "Stratus", "Cumulus"],
+        "correctAnswer": ["2"],
+        "img": "https://image.flaticon.com/icons/svg/2042/2042223.svg"
+    },
+    {
+        "question": "If you see lightning in the sky, which cloud could it be?",
+        "answers": ["Nimbostratus", "Cumulunimbus", "Stratocumulus"],
+        "correctAnswer": ["1"],
+        "img": "https://image.flaticon.com/icons/svg/2174/2174026.svg"
+    },
+    {
+        "question": "What are the ingredients for making a rainbow?",
+        "answers": ["2 parts luck, 1 part smarties", "Raindrops and sunshine", "Paint and a ladder"],
+        "correctAnswer": ["1"],
+        "img": "https://image.flaticon.com/icons/svg/2174/2174036.svg"
+    },
+    {
+        "question": "An anvil cloud forms when a cloud has reached the stratosphere and can no longer rise. What is the anvil cloud called?",
+        "answers": ["incus", "anvilus", "crepus"],
+        "correctAnswer": ["0"],
+        "img": "https://image.flaticon.com/icons/svg/222/222466.svg"
+    }
+]
+
+//https://image.flaticon.com/icons/svg/2174/2174026.svg nimbus
+//https://image.flaticon.com/icons/svg/2174/2174036.svg rainbow
+//https://image.flaticon.com/icons/svg/619/619010.svg //mountain top
+//https://image.flaticon.com/icons/svg/308/308767.svg ufo
+//https://image.flaticon.com/icons/svg/352/352564.svg horse shoe
+//https://image.flaticon.com/icons/svg/2042/2042223.svg cumulus
+//https://image.flaticon.com/icons/svg/222/222466.svg anvil
+//https://www.flaticon.com/free-icon/dawn_1146889 sunset
