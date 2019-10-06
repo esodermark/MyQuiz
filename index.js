@@ -1,16 +1,16 @@
 document.addEventListener("DOMContentLoaded", function (e){
-    document.getElementById("start").addEventListener("click", start);
+    document.getElementById("start").addEventListener("click", start);  //eventlisteners for buttons
     document.getElementById("next").addEventListener("click", nextQuestion);
     document.getElementById("previous").addEventListener("click", prevQuestion);
     document.getElementById("submit").addEventListener("click", submit);
     
 
-    let json = getJSON('http://www.mocky.io/v2/5d95ddaa3300003a002f8d27');
+    let json = getJSON('http://www.mocky.io/v2/5d9a129e310000820097da4b');
 
     let index = 0;
     let numQuestions;
-    let n = 0;
-    let m = 0;
+    let n = 0;  //counter
+    let m = 0;  //counter
 
 
     class Question {
@@ -31,18 +31,17 @@ document.addEventListener("DOMContentLoaded", function (e){
     }
 }
 
-    let q = new Question("Vadå?", ["ja", "nej", "kanske"], ["0"]);
-    q.newQuestions();
 
     class Quiz {
         constructor () {
             this.question = json;
             this.playerAnswer = [];
             this.name = "";
+            this.numCorrectAnswers = [];
             console.log(this.question);
         }
 
-        createDivContent(){
+        createDivContent(){ //creates divs to questions dependant on the number of questions the player has chosen
             let container = document.querySelector(".container");
             for(let i = 1; i <= numQuestions; i++){
                 //create div
@@ -51,11 +50,11 @@ document.addEventListener("DOMContentLoaded", function (e){
                 let h1 = document.createElement("h1");
                 //create image
                 let img = document.createElement("img");
-                img.setAttribute("src", json[i-1].img);
+                img.setAttribute("src", this.question[i-1].img);
                 //create checkboxParent + div
                 let checkboxParentDiv = document.createElement("div");
                 //create 3 checkboxes + 3 labels
-                this.labelAnswers = json[i-1].answers;
+                this.labelAnswers = this.question[i-1].answers;
                 for(let i = 1; i < 4; i++){
                     let checkbox = document.createElement("input");
                     checkbox.type = "checkbox";
@@ -78,8 +77,7 @@ document.addEventListener("DOMContentLoaded", function (e){
                 checkboxParentDiv.className = "checkboxParentDiv";
                 img.className = "img";
                 //create InnerHTML
-                h1.innerHTML = json[i-1].question;
-                
+                h1.innerHTML = this.question[i-1].question;
                 //append to div
                 div.appendChild(h1);
                 div.appendChild(img);
@@ -87,14 +85,14 @@ document.addEventListener("DOMContentLoaded", function (e){
                 //append to continer
                 container.appendChild(div);
                  //increment n
-                 n = n + 3;
+                 n = n + 3; //increments n, creating 3 boxes in sets of numQuestions
             }
                 
                 
                 console.log(container);
         }
 
-        createScoreBoard() {
+        createScoreBoard() {  //creates clouds in scoreboard dependant on numQuestions
             for(let i = 1; i <= numQuestions; i++){
                let scoreboardImg = document.createElement("img");
                scoreboardImg.id = "imgScoreboard" + i;
@@ -104,9 +102,8 @@ document.addEventListener("DOMContentLoaded", function (e){
             }
         }
 
-        renderQuestions () {
+        render () { //renders div of index by removing and adding class active, also renders buttons dependant on index
             let list = document.getElementsByClassName("active");
-            console.log(list);
             for (let element of list) {
               element.classList.remove("active");
             }
@@ -115,12 +112,16 @@ document.addEventListener("DOMContentLoaded", function (e){
                 document.getElementById("next").classList.remove("showButton");
                 document.getElementById("previous").classList.remove("showButton");
                 document.getElementById("submit").classList.remove("showButton");
-    
-            }else{
+                this.showNumCorrectAnswers();
+            }
+            else{
+                if(index == 1){
+                    document.getElementById("previous").classList.remove("showButton");
+                }else{
+                    document.getElementById("previous").classList.add("showButton");
+                }
                 document.getElementById("div" + index).classList.add("active");
-                //show buttons at index1
                 document.getElementById("next").classList.add("showButton");
-                document.getElementById("previous").classList.add("showButton");
                 document.getElementById("submit").classList.add("showButton");
             }
 
@@ -129,79 +130,91 @@ document.addEventListener("DOMContentLoaded", function (e){
             
             } 
 
-        /*playerAnswerArray () {
-            for(let i = 1; i <= (numQuestions*3); i ++){
-                let checkbox = document.getElementById("checkbox" + i);
-                if(checkbox.checked){
-                    console.log("hej");
-                    this.playerAnswer.push(checkbox.value);
-                    this.evaluatePlayerAnswer();
-                }
-            }
-        }*/
-
-        evaluatePlayerAnswer () {
-            let k = JSON.parse(json[index-1].correctAnswer);
-            console.log(k);
+        evaluatePlayerAnswer () { //compares player array to correctAnswer array
             
-            this.playerAnswer = [];
-            //Plussa på och loopa inte igenom alla
-            for(let i = 1; i <= 3; i ++){
-                let checkbox = document.getElementById("checkbox" + (i+m));
-                if(checkbox.checked){
-                    this.playerAnswer.push(checkbox.value);
+            this.playerAnswer = []; //empties array
+            let k = parseInt(this.question[index-1].correctAnswer[0]); //get value of correct answer
+            let j = parseInt(this.question[index-1].correctAnswer[1]); 
+
+            if(this.question[index-1].correctAnswer.length == 2){ //if two answers are correct
+                for(let i = 1; i <= 3; i ++){
+                    let checkbox = document.getElementById("checkbox" + (i+m)); //loop through to check value of checked checkbox
+                    if(checkbox.checked){
+                        this.playerAnswer.push(checkbox.value); //playerAnswer array gets the value of checked checkbox 
+                    }
+                }
+                if(JSON.stringify(this.playerAnswer) == JSON.stringify(this.question[index-1].correctAnswer)){
+                    document.getElementById("imgScoreboard" + index).src = "https://image.flaticon.com/icons/svg/439/439842.svg" //changes scoreboard icon to sun
+                    document.getElementById("label" + (m+k+1)).classList.add("correct"); //the value of playerAnswer and m (series of 3 to get checkboxes of current index)is added in order to locate correct label id
+                    document.getElementById("label" + (m+j+1)).classList.add("correct"); //class is then added which bolds and colors the  correct answer
+
+                    this.numCorrectAnswers.push(this.playerAnswer); //adds correct answer to numCorrectAnswers array
+                }else{
+                    document.getElementById("imgScoreboard" + index).src = "https://image.flaticon.com/icons/svg/2174/2174026.svg" //changes scoreboard icon to rain cloud
+                    document.getElementById("label" + (m+k+1)).classList.add("correct");
+                    document.getElementById("label" + (m+j+1)).classList.add("correct");
+                }
+            }else{
+                let k = JSON.parse(this.question[index-1].correctAnswer); //if 1 answer is correct
+
+                for(let i = 1; i <= 3; i ++){
+                    let checkbox = document.getElementById("checkbox" + (i+m));
+                    if(checkbox.checked){
+                        this.playerAnswer.push(checkbox.value);
+                    }
+                }
+                if(JSON.stringify(this.playerAnswer) == JSON.stringify(this.question[index-1].correctAnswer)){
+                    document.getElementById("imgScoreboard" + index).src = "https://image.flaticon.com/icons/svg/439/439842.svg"
+                    document.getElementById("label" + (m+k+1)).classList.add("correct");
+                    this.numCorrectAnswers.push(this.playerAnswer);
+                }else{
+                    document.getElementById("label" + (m+k+1)).classList.add("correct");
+                    document.getElementById("imgScoreboard" + index).src = "https://image.flaticon.com/icons/svg/2174/2174026.svg"
                 }
             }
-            if(JSON.stringify(this.playerAnswer) == JSON.stringify(json[index-1].correctAnswer)){
-                document.getElementById("imgScoreboard" + index).src = "https://image.flaticon.com/icons/svg/439/439842.svg"
-                document.getElementById("label" + (m+k+1)).classList.add("correct");
-                console.log("YAY");
-            }else{
-                document.getElementById("label" + (m+k+1)).classList.add("correct");
-                console.log("NAY");
-                document.getElementById("imgScoreboard" + index).src = "https://image.flaticon.com/icons/svg/2174/2174026.svg"
-            }
-
-            console.log(this.playerAnswer);
         }
 
-        getPlayerName () {
+        getPlayerName () { //gets submitted name and numQuestions
             this.name = document.getElementById("name").value;
             document.getElementById("start").innerHTML = (`Let's get started ${this.name}! &rarr;`);
             numQuestions = document.getElementById("numQuestion").value;
         }
 
+        showNumCorrectAnswers () {  //manipulates last div where correct answers are shown
+            if(this.numCorrectAnswers.length > 0){ //if answers are more than 0
+                document.getElementById("h1ShowScore").innerHTML = (`You collected ${this.numCorrectAnswers.length} ☀️. Good job!`)
+            }else{ //if no answer is correct
+                document.getElementById("congrats").innerHTML = "Woops!"
+                document.getElementById("h1ShowScore").innerHTML = (`You collected ${this.numCorrectAnswers.length} ☀️ Perhaps you should read up on clouds before you retake the quiz!`)
+            }
+        }
         
     }
 
-    let question = new Quiz;
-
-    question.question.push((new Question("Vadå?", ["ja", "nej", "kanske"], ["0"])));
+    let quiz = new Quiz;
+    //push new question to quiz (of class Quiz) via class Question
+    quiz.question.push((new Question("Lenticularis almost looks like a ufo. Where does it form? 2 answers are correct.", ["above mountains", "above fields", "above buildings"], ["0", "2"], "https://image.flaticon.com/icons/svg/308/308767.svg")));
     
-    function start () {
+    function start () { //start button
         index = 1;
-        question.createDivContent();
-        question.renderQuestions();
-        question.createScoreBoard();
+        quiz.createDivContent();
+        quiz.render();
+        quiz.createScoreBoard();
         
  
     }
 
-    function nextQuestion () {
-
-        if(index > numQuestions){
-            console.log("SLUT");
+    function nextQuestion () {  //next button
+        if(index >= numQuestions){
+            index++;
+            quiz.render();
         }else{
-            for (let i = 1; i < 4; i++){
+            for (let i = 1; i < 4; i++){ //checks if checkboxes are checked, otherwise player cannot move on
                 let checkbox = document.getElementById("checkbox" + (i+m))
-                console.log(checkbox);
                 if(checkbox.checked){
-                    console.log("choose an answer");
                     index++;
-                    question.renderQuestions();
-                    m = m + 3;
-                }else{
-                    console.log("Svara!"); //skriv ut på sidan
+                    quiz.render();
+                    m = m + 3; //increment m by 3 so 3 new checkboxes with unique ids can be created
                 }
             }
         }
@@ -210,32 +223,25 @@ document.addEventListener("DOMContentLoaded", function (e){
         
     }
 
-    function prevQuestion () {
+    function prevQuestion () { //prev button
         index--
-        question.renderQuestions();
+        quiz.render();
+        m = m - 3; //decrements so the count is kept correct in relation to index
     }
 
     function submit () {
-        console.log("tjabba");
-        question.evaluatePlayerAnswer();
+        quiz.evaluatePlayerAnswer();
+        for (let i = 1; i < 4; i++){  //disables checkboxes so answer can't be manipulated
+            let checkbox = document.getElementById("checkbox" + (i+m))
+            checkbox.disabled = true;
+        }
         
     }
 
-    document.getElementById("btnAdd").addEventListener("click", question.getPlayerName);
+    document.getElementById("btnAdd").addEventListener("click", quiz.getPlayerName); //eventlistener, not at top with others, since 
+    //quiz has to be initialised
 
 })
-
-
-
-/*m = 0;
-for(let i = 1; i <= numQuestions; i++){
-    document.getElementById("h1" + i).innerHTML = this.question;
-    for(let i = 1; i < 4; i++){
-        document.getElementById("label" + (i+m)).innerHTML = this.answers[i-1];
-    }
-    m = m + 3;
-}*/
-
 
 
 
