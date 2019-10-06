@@ -13,11 +13,17 @@
 <body>
     <div class="container">
         <div id ="div0" class="div div0 active">
-            <h1>Start</h1>
-            <button id="start" class="button">Start</button>
+            <h1 class="h1div0">Collect ☀️ by answering questions on clouds ☁️</h1>
+            <button id="start" class="button"></button>
             <input type="text" id="name">
-            <button type="submit" class="addName">Add</button>
-            <label for="name" class="name">Name</label>
+            <select id="numQuestion">
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+              </select>
+              <label for="numQuestion" id="showQuestion">Number of questions you want to show</label>
+            <button type="submit" id="btnAdd" class="addName">OK</button>
+            <label for="name" class="nameLabel">Name</label>
             <!--Create input txt for Name, create how many questions display-->
         </div>
         <button id="submit" class="button">Submit</button>

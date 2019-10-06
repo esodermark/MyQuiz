@@ -3,21 +3,43 @@ document.addEventListener("DOMContentLoaded", function (e){
     document.getElementById("next").addEventListener("click", nextQuestion);
     document.getElementById("previous").addEventListener("click", prevQuestion);
     document.getElementById("submit").addEventListener("click", submit);
+    
 
     let json = getJSON('http://www.mocky.io/v2/5d95ddaa3300003a002f8d27');
 
     let index = 0;
-    let numQuestions = 4;
+    let numQuestions;
     let n = 0;
     let m = 0;
 
 
     class Question {
+        constructor(question, answers, correctAnswer, img) {
+            this.question = question;
+            this.answers = answers;
+            this.correctAnswer = correctAnswer;
+            this.img = img;
+        }
+
+        newQuestions () {
+            let newQuestion = {
+                question: this.question,
+                answers: this.answers,
+                correctAnswer: this.correctAnswer,
+                img: this.img
+            }
+    }
+}
+
+    let q = new Question("Vadå?", ["ja", "nej", "kanske"], ["0"]);
+    q.newQuestions();
+
+    class Quiz {
         constructor () {
-            /*this.question = json[index-1].question;
-            this.answers = json[index-1].answers;
-            this.correctAnswers = json[index-1].correctAnswer;*/
+            this.question = json;
             this.playerAnswer = [];
+            this.name = "";
+            console.log(this.question);
         }
 
         createDivContent(){
@@ -107,7 +129,7 @@ document.addEventListener("DOMContentLoaded", function (e){
             
             } 
 
-        playerAnswerArray () {
+        /*playerAnswerArray () {
             for(let i = 1; i <= (numQuestions*3); i ++){
                 let checkbox = document.getElementById("checkbox" + i);
                 if(checkbox.checked){
@@ -116,13 +138,20 @@ document.addEventListener("DOMContentLoaded", function (e){
                     this.evaluatePlayerAnswer();
                 }
             }
-            
-        }
+        }*/
 
         evaluatePlayerAnswer () {
             let k = JSON.parse(json[index-1].correctAnswer);
             console.log(k);
-            console.log(this.playerAnswer);
+            
+            this.playerAnswer = [];
+            //Plussa på och loopa inte igenom alla
+            for(let i = 1; i <= 3; i ++){
+                let checkbox = document.getElementById("checkbox" + (i+m));
+                if(checkbox.checked){
+                    this.playerAnswer.push(checkbox.value);
+                }
+            }
             if(JSON.stringify(this.playerAnswer) == JSON.stringify(json[index-1].correctAnswer)){
                 document.getElementById("imgScoreboard" + index).src = "https://image.flaticon.com/icons/svg/439/439842.svg"
                 document.getElementById("label" + (m+k+1)).classList.add("correct");
@@ -132,37 +161,52 @@ document.addEventListener("DOMContentLoaded", function (e){
                 console.log("NAY");
                 document.getElementById("imgScoreboard" + index).src = "https://image.flaticon.com/icons/svg/2174/2174026.svg"
             }
-            return this.playerAnswer = [];
+
+            console.log(this.playerAnswer);
+        }
+
+        getPlayerName () {
+            this.name = document.getElementById("name").value;
+            document.getElementById("start").innerHTML = (`Let's get started ${this.name}! &rarr;`);
+            numQuestions = document.getElementById("numQuestion").value;
         }
 
         
     }
 
-    let question = new Question;
-    question.createScoreBoard();
-    question.createDivContent();
+    let question = new Quiz;
+
+    question.question.push((new Question("Vadå?", ["ja", "nej", "kanske"], ["0"])));
     
     function start () {
         index = 1;
-        console.log(index);
+        question.createDivContent();
         question.renderQuestions();
+        question.createScoreBoard();
+        
  
     }
 
     function nextQuestion () {
 
-        for (let i = 1; i < 4; i++){
-            let checkbox = document.getElementById("checkbox" + (i+m))
-            console.log(checkbox);
-            if(checkbox.checked){
-                console.log("choose an answer");
-                index++;
-                question.renderQuestions();
-                m = m + 3;
-            }else{
-                console.log("Svara!");
+        if(index > numQuestions){
+            console.log("SLUT");
+        }else{
+            for (let i = 1; i < 4; i++){
+                let checkbox = document.getElementById("checkbox" + (i+m))
+                console.log(checkbox);
+                if(checkbox.checked){
+                    console.log("choose an answer");
+                    index++;
+                    question.renderQuestions();
+                    m = m + 3;
+                }else{
+                    console.log("Svara!"); //skriv ut på sidan
+                }
             }
         }
+
+
         
     }
 
@@ -173,14 +217,13 @@ document.addEventListener("DOMContentLoaded", function (e){
 
     function submit () {
         console.log("tjabba");
-        question.playerAnswerArray();
+        question.evaluatePlayerAnswer();
         
     }
 
-    console.log(index);
+    document.getElementById("btnAdd").addEventListener("click", question.getPlayerName);
+
 })
-
-
 
 
 
